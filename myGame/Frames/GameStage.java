@@ -16,12 +16,14 @@ import myGame.Objects.Snake;
 import java.util.LinkedList;
 
 public class GameStage extends Application {
+    private enum GameState{READY, PAUSE, RUN, TIMEOUT};
     private Timeline timeline;
     private KeyFrame keyFrame;
     public  Stage stage = new Stage();
     public  Group root;
     public   LinkedList<Light.Point> list = new LinkedList<Light.Point>();
     public static Snake snake;
+    public  GameState gameState;
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.stage=primaryStage;
@@ -44,26 +46,12 @@ public class GameStage extends Application {
                 gameCanvas.onKeyPressed(event);
             }});
 
-    /*   scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-        //            @Override
-        //            public void handle(KeyEvent event) {
-        //                gameCanvas.onKeyPressed(event);
-        //            }
-        //        });
-        //*/
-        //       /*snake = new Snake(60,60);
-        //       snake.setColor(Color.WHITE);*/
-        //        //snake.drawSnake(graphic);
-        //
-        //       // gameCanvas.initEvents(root);
-
         gameCanvas.start();
         primaryStage.setScene(scene);
         primaryStage.show();
-
-
-
     }
+
+
 
     public static void main(String[] args) {
         System.out.println((int)(Math.random()*Contants.WIDTH));

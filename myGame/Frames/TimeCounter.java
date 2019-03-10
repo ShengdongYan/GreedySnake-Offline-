@@ -8,27 +8,27 @@ import javafx.scene.text.FontWeight;
 public class TimeCounter implements Runnable{
 
     private Thread t;
-    private int timeCounter;
+    private int time;
     private  boolean visible;
 
     public TimeCounter(int times) {
 
-        timeCounter = times;
+        time = times;
     }
 
     public  void draw(GraphicsContext gc){
 
         gc.setFont(Font.font(null, FontWeight.BLACK, 40));
        // gc.setFill(Color.WHITE);   // 如果不加，颜色会随着node颜色的更新而更新
-        gc.fillText(String.format("%02d", (this.getTime() / 60)) + ":" + String.format("%02d", (this.getTime() % 60)), SContants.WIDTH/2 + 100, 50);
+        gc.fillText(String.format("%02d", (this.getTime() / 60)) + ":" + String.format("%02d", (this.getTime() % 60)), SContants.WIDTH/2+40, 50);
 
     }
 
     public void run() {
 
         try {
-            while (timeCounter > 0) {
-                timeCounter--;
+            while (time > 0) {
+                time--;
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
@@ -42,21 +42,23 @@ public class TimeCounter implements Runnable{
             t.start ();
         }
     }
+  public void stopCount(){
 
+  }
     public Thread getT() {
         return t;
     }
 
-    public int getTimeCounter() {
-        return timeCounter;
+    public int getTime() {
+        return time;
     }
 
     public void setT(Thread t) {
         this.t = t;
     }
 
-    public void setTimeCounter(int timeCounter) {
-        this.timeCounter = timeCounter;
+    public void setTime(int time) {
+        this.time = time;
     }
 
     public void setVisible(boolean visible) {
@@ -67,7 +69,5 @@ public class TimeCounter implements Runnable{
         return visible;
     }
 
-    public int getTime() {
-        return timeCounter;
-    }
+
 }

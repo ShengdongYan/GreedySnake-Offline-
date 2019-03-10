@@ -1,13 +1,17 @@
 package myGame.Frames;
 
+import cn.silence1772.core.SContants;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import myGame.Objects.Node;
 import myGame.Objects.Snake;
@@ -19,6 +23,7 @@ import myGame.Objects.SnakeBody;
  * @version 2019-3-9
  */
 public class MyCanvas extends Canvas {
+    private enum GameState{READY, PAUSE, RUN, TIMEOUT};
     private Snake snakeA;
     private  Snake snakeB;
     private Node node;
@@ -27,6 +32,7 @@ public class MyCanvas extends Canvas {
     private KeyFrame keyFrame;
     private SnakeBody snakeBodyA;
     private TimeCounter timeCounter;
+    private GameState gameState;
 
 
     public MyCanvas(){
@@ -48,25 +54,23 @@ public class MyCanvas extends Canvas {
         snakeBodyA.initBody();
         drawGridding(gc);
         initTimeLine(gc);
+        gameState=GameState.RUN;
     }
 
 
- /*   public void initEvents(Group root) {
-        getParent().getScene().setOnKeyPressed(event -> {
-            onKeyPressed(event);
-        });
-
-        getParent().getScene().setOnKeyReleased(event -> {
-            onKeyReleased(event);
-        });
-
-      *//*  getParent().getScene().setOnMouseMoved(event -> {
-            onMouseMoved(event);
-        });*//*
-    }*/
-
     public void onKeyPressed(KeyEvent event) {
-      snakeA.onKeyPressed(event);
+        KeyCode key = event.getCode();
+       if(key==KeyCode.SPACE){
+           setGameState(GameState.PAUSE);
+       }
+       else if(key == KeyCode.ENTER){
+          timeline.play();
+           setGameState(GameState.RUN);
+       }
+       else{
+        snakeA.onKeyPressed(event);
+       }
+
     }
 
     public void onKeyReleased(KeyEvent event) {
@@ -85,24 +89,34 @@ public class MyCanvas extends Canvas {
 
 
         for (int i = 0; i < Contants.WIDTH; i += 18) {
-           /* Line line = new Line(i, 0, i, Contants.HEIGHT);
-            root.getChildren().add(line);*/
+
             gc.setStroke(Color.web("#111", 0.5));
             gc.strokeLine(i,0,i,Contants.HEIGHT);
-
-
-
         }
         for (int i = 0; i < Contants.HEIGHT; i += 18) {
 
         gc.setStroke(Color.web("#111", 0.5));
         gc.strokeLine(0,i,Contants.WIDTH,i);
 
-            /*Line line = new Line(0, i, Contants.WIDTH, i);
-            line.setStroke(Color.web("#111", 0.5));
-            root.getChildren().add(line);*/
     }
 }
+public  void drawStart(GraphicsContext gc){
+
+
+}
+
+  public void drawPause(GraphicsContext gc){
+      gc.setFont(Font.font("Times", FontWeight.BOLD, 80));
+       gc.setFill(Color.WHITE);
+      gc.fillText("Wait For a While...", Contants.WIDTH/2 - 250, Contants.HEIGHT/2);
+      gc.setFont(Font.font("Times", FontWeight.BOLD, 30));
+      gc.setFill(Color.GREEN);
+      gc.fillText("Press Enter to back", Contants.WIDTH/2 - 100, Contants.HEIGHT/2+100);
+      gc.setFont(Font.font("Times", FontWeight.BOLD, 20));
+      gc.setFill(Color.RED);
+      gc.fillText("Press Esc to Give up", Contants.WIDTH/2 - 80, Contants.HEIGHT/2+200);
+
+  }
 
     public void initTimeLine( GraphicsContext gc) {
 
@@ -115,8 +129,14 @@ public class MyCanvas extends Canvas {
                 gc.setEffect(null);
                 gc.clearRect(0, 0, getWidth(), getHeight());
                 drawGridding(gc);
+                if(getGameState()==GameState.RUN){
                 draw(gc);
                 update();
+                }
+               else if(getGameState()==GameState.PAUSE){
+                   timeline.pause();
+                    drawPause(gc);
+                }
             }
         });
         timeline.getKeyFrames().add(keyFrame);
@@ -147,6 +167,7 @@ public class MyCanvas extends Canvas {
 
 
     public void draw(GraphicsContext gc){
+
         snakeBodyA.draw(gc);             // 后期把食物两条蛇的画画过程放这
         snakeA.drawSnake(gc);
         node.draw(gc);
@@ -160,6 +181,14 @@ public class MyCanvas extends Canvas {
         if(snakeA.isReachBorder()){snakeA.rebirth(); snakeBodyA.initBody();}// 后期把两条蛇和食物的信息更新放在这
     }
 
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
 
     public Snake getSnakeA() {
         return snakeA;

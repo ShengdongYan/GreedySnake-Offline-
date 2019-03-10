@@ -7,10 +7,8 @@ package myGame.Frames;
  * @version 2019-03-07
  */
 public class Contants {
-	protected enum DIRECTIONS {
 
-		DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT, DIR_LEFTUP, DIR_LEFTDOWN, DIR_RIGHTUP, DIR_RIGHTDOWN
-	};
+
 	/**
 	 * 游戏屏幕大小
 	 */
