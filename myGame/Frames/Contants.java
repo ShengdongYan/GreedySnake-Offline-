@@ -7,7 +7,11 @@ package myGame.Frames;
  * @version 2019-03-07
  */
 public class Contants {
+	public enum GameState{READY, PAUSE, RUN, TIMEOUT};
+	public enum DIRECTIONS {
 
+		DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT, DIR_LEFTUP, DIR_LEFTDOWN, DIR_RIGHTUP, DIR_RIGHTDOWN
+	};
 
 	/**
 	 * 游戏屏幕大小
@@ -32,9 +36,10 @@ public class Contants {
 
 	public static final int DEFAULT_LENGTH = 6;
 
+	public static final int GameDuration = 10; //   设置游戏时长
 
 	public static final int duration = 100; // 刷新周期。
 
-	public static final double speed=10; //蛇的速度
+	public static final double speed=12; //蛇的速度
 
 }

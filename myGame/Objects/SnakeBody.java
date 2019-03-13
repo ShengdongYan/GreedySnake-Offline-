@@ -1,6 +1,5 @@
 package myGame.Objects;
 
-import cn.silence1772.core.SContants;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.Light;
 import myGame.Frames.Contants;
@@ -9,9 +8,9 @@ import java.util.LinkedList;
 
 public class SnakeBody {
 
-     private LinkedList<Light.Point> pointlist = new LinkedList<Light.Point>();
-     private  Snake snake ;
-     private boolean visible;
+    private LinkedList<Light.Point> pointlist = new LinkedList<Light.Point>();
+    private  Snake snake ;
+    private boolean visible;
     private double x;
     private double y;
     private  double height;
@@ -21,6 +20,7 @@ public class SnakeBody {
 
 
     public SnakeBody(Snake snake){
+
          this.snake = snake;
          initBody();
          setVisible(true);
@@ -34,15 +34,13 @@ public class SnakeBody {
            for (int i = 0; i < getLength(); i++) {
              Light.Point point = new Light.Point();
              point.setX(getX() );
-             point.setY(getY()+ SContants.DISTANCE * i);
+             point.setY(getY()+ Contants.DISTANCE * i);
              pointlist.add(point);
          }
      }
 
 
     public void draw(GraphicsContext gc) {
-
-
 
         // 原理：移动一次，那么后一个的位置就等于前一个的位置，也就是加入新的first，删除旧的last
         Light.Point firstPoi = pointlist.getFirst();

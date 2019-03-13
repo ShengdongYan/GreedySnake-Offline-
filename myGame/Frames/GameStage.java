@@ -3,7 +3,6 @@ package myGame.Frames;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -12,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import myGame.Objects.Snake;
+
 
 import java.util.LinkedList;
 
@@ -24,6 +24,7 @@ public class GameStage extends Application {
     public   LinkedList<Light.Point> list = new LinkedList<Light.Point>();
     public static Snake snake;
     public  GameState gameState;
+    public MyCanvas gameCanvas;
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.stage=primaryStage;
@@ -33,28 +34,27 @@ public class GameStage extends Application {
         /*Canvas canvas = new Canvas(Contants.WIDTH, Contants.HEIGHT);
         GraphicsContext graphic = canvas.getGraphicsContext2D();*/
 
-        MyCanvas gameCanvas = new MyCanvas();
-        gameCanvas.initial();
-
-
+        gameCanvas = new MyCanvas(root);
         root.getChildren().add(gameCanvas);
+
         Scene scene = new Scene(root);
         scene.setFill(Color.rgb(60,60,60));
+
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 gameCanvas.onKeyPressed(event);
             }});
 
-        gameCanvas.start();
+        gameCanvas.initial();
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
 
-
     public static void main(String[] args) {
-        System.out.println((int)(Math.random()*Contants.WIDTH));
+
         launch(args);
+
     }
 }

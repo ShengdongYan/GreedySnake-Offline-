@@ -39,7 +39,6 @@ public class Node {
         double red = (double)(1+Math.random()*255)%1;  // 防止小数点后位数太多,先取整，后转化
         double green = (1+Math.random()*255)%1;
         double blue = (1+Math.random()*255)%1;
-
         this.color = Color.color( red,green,blue);
 
     }

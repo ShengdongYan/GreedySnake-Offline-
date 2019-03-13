@@ -1,14 +1,17 @@
 package myGame.Frames;
 
-import cn.silence1772.core.SContants;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -17,106 +20,94 @@ import myGame.Objects.Node;
 import myGame.Objects.Snake;
 import myGame.Objects.SnakeBody;
 
+
 /**
  *
  * @author Shengdong Yan
  * @version 2019-3-9
  */
 public class MyCanvas extends Canvas {
-    private enum GameState{READY, PAUSE, RUN, TIMEOUT};
+
     private Snake snakeA;
-    private  Snake snakeB;
+    private Snake snakeB;
     private Node node;
     private GraphicsContext gc;
     private Timeline timeline;
     private KeyFrame keyFrame;
     private SnakeBody snakeBodyA;
+    private SnakeBody snakeBodyB;
     private TimeCounter timeCounter;
-    private GameState gameState;
+    private Contants.GameState gameState;
+    private Group root;
+    private Label label;
 
 
-    public MyCanvas(){
-        node =new Node();
-        this.setHeight(Contants.HEIGHT);
-        this.setWidth(Contants.WIDTH);
-        snakeA = new Snake(Contants.userAX,Contants.userAY,node);
-        snakeB = new Snake(Contants.userBX,Contants.userBY,node);
-         gc = this.getGraphicsContext2D();
-         snakeBodyA = new SnakeBody(snakeA);
-       timeCounter = new TimeCounter(300);
+    public MyCanvas(Group root){
 
+         this.root =root;
     }
 
 
     public void  initial(){
-        timeCounter.start();
+        node =new Node();
+        this.setHeight(Contants.HEIGHT);
+        this.setWidth(Contants.WIDTH);
+        snakeA = new Snake(Contants.userAX,Contants.userAY,node,snakeBodyA);
+        snakeB = new Snake(Contants.userBX,Contants.userBY,node, snakeBodyB);
+        gc = this.getGraphicsContext2D();
+        snakeBodyA = new SnakeBody(snakeA);
+        snakeBodyB = new SnakeBody(snakeB);
+        timeCounter = new TimeCounter(Contants.GameDuration);
         snakeA.setColor(Color.BLUE);
+        snakeA.setUserName("DongdongSnake");  // Update the userName here
+
+      //  snakeB.setUserName("ChangeCode!");
         snakeBodyA.initBody();
-        drawGridding(gc);
         initTimeLine(gc);
-        gameState=GameState.RUN;
+        drawStart();
+
     }
 
 
-    public void onKeyPressed(KeyEvent event) {
+    public void onKeyPressed(KeyEvent event){
         KeyCode key = event.getCode();
-       if(key==KeyCode.SPACE){
-           setGameState(GameState.PAUSE);
-       }
-       else if(key == KeyCode.ENTER){
-          timeline.play();
-           setGameState(GameState.RUN);
-       }
-       else{
-        snakeA.onKeyPressed(event);
-       }
+        // 在run的状态下再按空格，变暂停状态
+        if(this.getGameState()==Contants.GameState.RUN){
+        if(key==KeyCode.SPACE){
+            setGameState(Contants.GameState.PAUSE);
+            timeCounter.stopTimer();
+        }
+        else if(key ==KeyCode.ESCAPE){
+                setGameState(Contants.GameState.TIMEOUT);
+                timeCounter.setTime(0);
+        }
+        else{
+            snakeA.onKeyPressed(event);
+        }
+        }
+
+        else if(this.getGameState()==Contants.GameState.PAUSE) {   // 在暂停状态，再一次空格回到run状态
+            if (key == KeyCode.SPACE) {
+                setGameState(Contants.GameState.RUN);
+                timeCounter.startTimer();
+            }
+        }
+
 
     }
+
+/*
 
     public void onKeyReleased(KeyEvent event) {
-       snakeA.onKeyPressed(event);
+       snakeA.onKeyReleased(event);
     }
-
- /*   public void onMouseMoved(MouseEvent event) {
+   public void onMouseMoved(MouseEvent event) {
         for (SObject wObject : mObjects) {
             wObject.onMouseMoved(event);
         }
     }
 */
 
-    public void drawGridding(GraphicsContext gc){
-
-
-
-        for (int i = 0; i < Contants.WIDTH; i += 18) {
-
-            gc.setStroke(Color.web("#111", 0.5));
-            gc.strokeLine(i,0,i,Contants.HEIGHT);
-        }
-        for (int i = 0; i < Contants.HEIGHT; i += 18) {
-
-        gc.setStroke(Color.web("#111", 0.5));
-        gc.strokeLine(0,i,Contants.WIDTH,i);
-
-    }
-}
-public  void drawStart(GraphicsContext gc){
-
-
-}
-
-  public void drawPause(GraphicsContext gc){
-      gc.setFont(Font.font("Times", FontWeight.BOLD, 80));
-       gc.setFill(Color.WHITE);
-      gc.fillText("Wait For a While...", Contants.WIDTH/2 - 250, Contants.HEIGHT/2);
-      gc.setFont(Font.font("Times", FontWeight.BOLD, 30));
-      gc.setFill(Color.GREEN);
-      gc.fillText("Press Enter to back", Contants.WIDTH/2 - 100, Contants.HEIGHT/2+100);
-      gc.setFont(Font.font("Times", FontWeight.BOLD, 20));
-      gc.setFill(Color.RED);
-      gc.fillText("Press Esc to Give up", Contants.WIDTH/2 - 80, Contants.HEIGHT/2+200);
-
-  }
 
     public void initTimeLine( GraphicsContext gc) {
 
@@ -129,13 +120,16 @@ public  void drawStart(GraphicsContext gc){
                 gc.setEffect(null);
                 gc.clearRect(0, 0, getWidth(), getHeight());
                 drawGridding(gc);
-                if(getGameState()==GameState.RUN){
+                if(getGameState()==Contants.GameState.RUN){
                 draw(gc);
                 update();
+                drawScoreBoard();
                 }
-               else if(getGameState()==GameState.PAUSE){
-                   timeline.pause();
+               else if(getGameState()==Contants.GameState.PAUSE){
                     drawPause(gc);
+                }
+               else if(getGameState() ==Contants.GameState.TIMEOUT){
+                   drawTimeout(gc);
                 }
             }
         });
@@ -148,6 +142,7 @@ public  void drawStart(GraphicsContext gc){
      */
     public void start() {
         timeline.play();
+        timeCounter.start();
     }
 
     /**
@@ -166,6 +161,104 @@ public  void drawStart(GraphicsContext gc){
 
 
 
+    public void drawGridding(GraphicsContext gc){
+
+        for (int i = 0; i < Contants.WIDTH; i += 18) {
+
+            gc.setStroke(Color.web("#111", 0.5));
+            gc.strokeLine(i,0,i,Contants.HEIGHT);
+        }
+        for (int i = 0; i < Contants.HEIGHT; i += 18) {
+
+            gc.setStroke(Color.web("#111", 0.5));
+            gc.strokeLine(0,i,Contants.WIDTH,i);
+
+        }
+    }
+
+    public  void drawStart() {
+
+        Label label = new Label("Are You Ready?");
+        label.setLayoutX(Contants.WIDTH / 2 - 300);
+        label.setLayoutY(Contants.HEIGHT / 2 - 250);
+        label.setStyle("-fx-font: 80 arial; -fx-font-weight: bold; -fx-text-fill: Gray;  ");
+        root.getChildren().add(label);
+
+        Button button = new Button();
+        button.setText("Start Now!");
+        button.setLayoutX(Contants.WIDTH / 2 - 75);
+        button.setLayoutY(Contants.HEIGHT / 2 - 50);
+        button.setMinWidth(150);
+        button.setMinHeight(70);
+        button.setStyle("-fx-font: 24 arial; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #ff4e4e; -fx-background-radius: 20; ");
+        root.getChildren().add(button);
+
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                setGameState(Contants.GameState.RUN);
+                root.getChildren().remove(button);
+                root.getChildren().remove(label);
+                start();
+            }
+        });
+    }
+
+    public void drawScoreBoard(){
+        String InfoA = String.format("%-14s", snakeA.getUserName())+": "+String.valueOf(snakeA.getScore());
+        String InfoB = String.format("%-14s", snakeB.getUserName())+": "+String.valueOf(snakeB.getScore());
+        // Username 从网络得到，顺便加成固定长度(空格大小和字体大小不一样，所以显示的长度还是不一样)
+
+        label = new Label(InfoA+"\n"+ InfoB);
+        label.setLayoutX(Contants.WIDTH-300);
+        label.setLayoutY(Contants.HEIGHT-800);
+        label.setStyle("-fx-font: 30 arial; -fx-font-weight: bold; -fx-text-fill: Gray;  ");
+        root.getChildren().add(label);
+    }
+
+    public void drawPause(GraphicsContext gc){
+        gc.setFont(Font.font("Times", FontWeight.BOLD, 80));
+        gc.setFill(Color.YELLOW);
+        gc.fillText("Wait For a While...", Contants.WIDTH/2 - 280, Contants.HEIGHT/2 -100);
+        gc.setFont(Font.font("Times", FontWeight.BOLD, 30));
+        gc.setFill(Color.GREEN);
+        gc.fillText("Press Space again to back", Contants.WIDTH/2 - 150, Contants.HEIGHT/2+20);
+        gc.setFont(Font.font("Times", FontWeight.BOLD, 20));
+        gc.setFill(Color.RED);
+        gc.fillText("Press Esc to Give up", Contants.WIDTH/2 - 80, Contants.HEIGHT/2+120);
+
+    }
+
+    public  void drawTimeout(GraphicsContext gc){
+        String massage = "Time out";
+        if(snakeA.getScore()>snakeB.getScore()){
+            massage +="\n"+ snakeA.getUserName()+ " is Winner";
+        }
+        else massage +="\n"+ snakeA.getUserName()+ " is Winner";
+
+        gc.setFont(Font.font("Times", FontWeight.BOLD, 40));
+        gc.setFill(Color.YELLOW);
+        gc.fillText(massage, Contants.WIDTH/2 - 300, Contants.HEIGHT/2);
+
+        Button button = new Button();
+        button.setText("Ok,Return");
+        button.setLayoutX(Contants.WIDTH / 2 - 75);
+        button.setLayoutY(Contants.HEIGHT - 150);
+        button.setMinWidth(150);
+        button.setMinHeight(70);
+        button.setStyle("-fx-font: 24 arial; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #ff4e4e; -fx-background-radius: 20; ");
+        root.getChildren().add(button);
+
+       button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+            }
+        });
+
+    }
+
+
     public void draw(GraphicsContext gc){
 
         snakeBodyA.draw(gc);             // 后期把食物两条蛇的画画过程放这
@@ -175,19 +268,25 @@ public  void drawStart(GraphicsContext gc){
     }
 
     public  void  update(){
+        if(timeCounter.getTime()<=0)
+            this.setGameState(Contants.GameState.TIMEOUT);
+
         snakeBodyA.update();
         snakeA.update();
         if(snakeA.isGetNode()) {node.update();}
-        if(snakeA.isReachBorder()){snakeA.rebirth(); snakeBodyA.initBody();}// 后期把两条蛇和食物的信息更新放在这
+        if(snakeA.isReachBorder()){snakeA.rebirth(); snakeBodyA.initBody();} // 后期把两条蛇和食物的信息更新放在这
+        root.getChildren().remove(label);
     }
 
 
-    public GameState getGameState() {
+
+    public Contants.GameState getGameState() {
         return gameState;
     }
 
-    public void setGameState(GameState gameState) {
+    public void setGameState(Contants.GameState gameState) {
         this.gameState = gameState;
+
     }
 
     public Snake getSnakeA() {

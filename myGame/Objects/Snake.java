@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import myGame.Frames.Contants;
 
 public class Snake {
-  // public  LinkedList<Light.Point> list = new LinkedList<Light.Point>();
   protected enum DIRECTIONS {
 
       DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT, DIR_LEFTUP, DIR_LEFTDOWN, DIR_RIGHTUP, DIR_RIGHTDOWN
@@ -24,7 +23,10 @@ public class Snake {
     private Color color;
     private Node node;
     private SnakeBody snakeBody;
-    public Snake(double x, double y,Node node) {
+    private  int Score;
+    private String userName;
+
+    public Snake(double x, double y,Node node , SnakeBody snakeBody) {
         this.x = x;
         this.y = y;
         this.height = Contants.UnitHeight;
@@ -32,88 +34,9 @@ public class Snake {
         this.setDirection(DIRECTIONS.DIR_RIGHT);
         this.length = Contants.DEFAULT_LENGTH;
         this.node = node;
+        Score =0;
+        this.snakeBody = snakeBody;
 
-    }
-
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setUpdated(boolean updated) {
-        this.updated = updated;
-    }
-
-    public boolean isUpdated() {
-        return updated;
-    }
-
-    public DIRECTIONS getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DIRECTIONS direction) {
-        this.direction = direction;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-    public Color getColor() {
-        return this.color;
-    }
-
-
-    public void moveX(double x) {
-        this.setX(getX() + x);
-    }
-
-    public void moveY(double y) {
-        this.setY(getY() + y);
     }
 
 
@@ -301,6 +224,7 @@ public class Snake {
         this.setY(Contants.userAY);
         this.setLength(Contants.DEFAULT_LENGTH);
         this.setDirection(DIRECTIONS.DIR_UP);
+        this.setScore(0);
 
     }
     public boolean isReachBorder(){
@@ -315,6 +239,7 @@ public class Snake {
         if(getX() + getWidth() > node.getX() && getX() < node.getX() + node.getWidth()
                 && getY() + getHeight()  > node.getY() && getY() < node.getY() + node.getHeight()){
             this.setLength(getLength()+1);
+            this.setScore(getScore()+1);
             return true;
         }
 
@@ -322,12 +247,120 @@ public class Snake {
     }
 
 
-/*    public boolean isCollisionWith(SObject baseObject) {
-        if (getX() + getWidth() - bias> baseObject.getX() && getX() < baseObject.getX() + baseObject.getWidth() - bias
-                && getY() + getHeight() - bias > baseObject.getY() && getY() < baseObject.getY() + baseObject.getHeight() - bias) {
+   public boolean isCollisionWithSnake(Snake Snake) {
+        for(int i =0; i< Snake.getLength();i++){
+        if (getX() + getWidth() >= Snake.getSnakeBody().getPointlist().get(i).getX() && getX() < Snake.getSnakeBody().getPointlist().get(i).getX() + Snake.getWidth()
+                && getY() + getHeight()  > Snake.getSnakeBody().getPointlist().get(i).getY() && getY() < Snake.getSnakeBody().getPointlist().get(i).getY() + Snake.getHeight() ) {
             return true;
         }
+        }
         return false;
-    }*/
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+
+    public SnakeBody getSnakeBody() {
+        return snakeBody;
+    }
+
+    public void setSnakeBody(SnakeBody snakeBody) {
+        this.snakeBody = snakeBody;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
+
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public DIRECTIONS getDirection() {
+        return direction;
+    }
+
+    public void setDirection(DIRECTIONS direction) {
+        this.direction = direction;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+    public Color getColor() {
+        return this.color;
+    }
+
+    public int getScore() {
+        return Score;
+    }
+
+    public void setScore(int score) {
+        Score = score;
+    }
+
+    public void moveX(double x) {
+        this.setX(getX() + x);
+    }
+
+    public void moveY(double y) {
+        this.setY(getY() + y);
+    }
+
+
 
 }
