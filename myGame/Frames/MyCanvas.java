@@ -193,15 +193,25 @@ public class MyCanvas extends Canvas {
         button.setStyle("-fx-font: 24 arial; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #ff4e4e; -fx-background-radius: 20; ");
         root.getChildren().add(button);
 
+        Label label2 = new Label(" In the Game you can: \n Use SPACE to pause the game \n And SPACE again to back");
+        label2.setLayoutX(Contants.WIDTH / 2 - 150);
+        label2.setLayoutY(Contants.HEIGHT  - 250);
+        label2.setStyle("-fx-font: 20 arial; -fx-font-weight: bold; -fx-text-fill: Gray;  ");
+        root.getChildren().add(label2);
+
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 setGameState(Contants.GameState.RUN);
                 root.getChildren().remove(button);
                 root.getChildren().remove(label);
+                root.getChildren().remove(label2);
                 start();
             }
         });
+
+
+
     }
 
     public void drawScoreBoard(){

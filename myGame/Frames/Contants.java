@@ -36,7 +36,7 @@ public class Contants {
 
 	public static final int DEFAULT_LENGTH = 6;
 
-	public static final int GameDuration = 10; //   设置游戏时长
+	public static final int GameDuration = 120; //   设置游戏时长
 
 	public static final int duration = 100; // 刷新周期。
 
